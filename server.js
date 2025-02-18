@@ -51,6 +51,25 @@ io.on("connection", (socket) => {
     });
 });
 
+// Endpoint to get a list of online users
+app.get("/", (req, res) => {
+    console.log(Object.keys(userSockets));
+    res.send('Working Websocket Server');
+});
+
+// Endpoint to get a list of online users from a given list of userIds
+app.post("/online-users", (req, res) => {
+    const { userIds } = req.body;
+
+    if (!Array.isArray(userIds)) {
+        return res.status(400).json({ error: "Invalid request. Expected an array of userIds." });
+    }
+
+    const onlineUsers = userIds.filter(userId => userSockets.hasOwnProperty(userId));
+
+    res.json({ onlineUsers });
+});
+
 server.listen(3000, () => {
     console.log("Server is running on port 3000");
 });
